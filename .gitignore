@@ -1,0 +1,9 @@
+uploads/
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+venv310/
+.vscode/
+model.h5
