@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plant Leaf Disease Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% include 'navbar.html' %}
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #e2efe2;
+            background-image: radial-gradient(#d0e4d0 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #2f3e2f;
+        }
+
+        /* Header */
+        .header {
+            background-color: #1b5e20;
+            padding: 20px 40px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .logout-link {
+            color: #c8e6c9;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .logout-link:hover {
+            color: white;
+        }
+
+        /* Main Section */
+        .main-container {
+            max-width: 950px;
+            margin: 70px auto;
+        }
+
+        .card-box {
+            background: white;
+            border-radius: 18px;
+            padding: 50px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+        }
+
+        .section-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #1b5e20;
+        }
+
+        .section-subtitle {
+            color: #5a6d5a;
+            margin-bottom: 35px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .btn-analyze {
+            background-color: #2e7d32;
+            border: none;
+            padding: 12px;
+            font-weight: 500;
+            border-radius: 8px;
+        }
+
+        .btn-analyze:hover {
+            background-color: #1b5e20;
+        }
+
+        .preview-img {
+            max-width: 320px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 2px solid #e0f2e0;
+        }
+
+        .result-box {
+            margin-top: 35px;
+            padding: 25px;
+            border-radius: 14px;
+            background-color: #f1f8f1;
+            border: 1px solid #c8e6c9;
+        }
+
+        .progress {
+            height: 8px;
+        }
+
+        .progress-bar {
+            background-color: #2e7d32;
+        }
+
+        .result-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            max-width: 700px;
+            margin: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+
+
+<div class="main-container">
+    <div class="card-box">
+
+        <div class="section-title">
+            Plant Disease Detection Module
+        </div>
+        <div class="section-subtitle">
+            Upload a plant leaf image to detect potential diseases using the trained Convolutional Neural Network model.
+        </div>
+
+        <form method="POST" action="/predict" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input class="form-control" type="file" name="image" id="imageInput" accept="image/*" required>
+            </div>
+
+            <div class="text-center mb-3">
+                <img id="preview" class="preview-img" style="display:none;">
+            </div>
+
+            <button class="btn btn-analyze w-100 text-white">
+                Analyze Leaf Image
+            </button>
+        </form>
+
+        {% if disease %}
+<div class="result-card mt-5">
+
+    <h4 class="text-center">Plant Disease Detection</h4>
+
+    <h2 class="text-center 
+        {% if disease == 'Healthy' %}
+            text-success
+        {% else %}
+            text-danger
+        {% endif %}
+    ">
+        {{ disease }}
+    </h2>
+
+    <p class="text-center">
+        Confidence: <strong>{{ confidence }}%</strong>
+    </p>
+
+    <p class="text-center">
+        Severity Level: <strong>{{ severity }}</strong>
+    </p>
+
+    <div class="alert 
+        {% if severity == 'High Risk' %}
+            alert-danger
+        {% elif severity == 'Moderate Risk' %}
+            alert-warning
+        {% else %}
+            alert-info
+        {% endif %}
+    ">
+        {{ ai_message }}
+    </div>
+
+    {% if disease != "Healthy" %}
+    <hr>
+    <h5>Recommended Treatment</h5>
+    <p>{{ treatment }}</p>
+
+    <h5 class="mt-3">Prevention Tips</h5>
+    <p>{{ prevention }}</p>
+    {% else %}
+    <hr>
+    <div class="alert alert-success">
+        Your plant appears healthy. Continue regular care and monitoring.
+    </div>
+    {% endif %}
+
+</div>
+{% endif %}
+
+    </div>
+</div>
+
+<script>
+document.getElementById("imageInput").onchange = function(event) {
+    const [file] = this.files;
+    if (file) {
+        const preview = document.getElementById("preview");
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    }
+};
+</script>
+
+</body>
+</html>
