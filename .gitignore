@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 uploads/
 __pycache__/
 *.pyc
@@ -6,4 +7,14 @@ __pycache__/
 venv/
 venv310/
 .vscode/
+=======
+uploads/
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+venv310/
+.vscode/
+>>>>>>> 2c7305cbd74de8330fd6a862c2727f5863aaf343
 model.h5
