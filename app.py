@@ -30,10 +30,11 @@ app.secret_key = os.getenv("SECRET_KEY")
 # ---------------- DATABASE FUNCTION ----------------
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password= os.getenv("DB_PASSWORD"),
-        database="project",
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
+        port=int(os.getenv("MYSQLPORT")),
         buffered=True
     )
 
