@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 import os
 import gdown
 import threading
-import time
 
 load_dotenv()
 
@@ -63,7 +62,6 @@ if not os.path.exists(UPLOAD_FOLDER):
 def index():
     return redirect(url_for('login'))
 
-# ---------------- REGISTER ----------------
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -86,19 +84,16 @@ def register():
 
     return render_template('register.html')
 
-# ---------------- LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        # Admin login
         if username == "admin" and password == "admin123":
             session['username'] = "admin"
             return redirect(url_for('admin'))
 
-        # Normal user login
         db = get_db()
         cursor = db.cursor(dictionary=True)
         cursor.execute(
@@ -117,20 +112,17 @@ def login():
 
     return render_template('login.html')
 
-# ---------------- HOME ----------------
 @app.route('/home')
 def home():
     if 'username' not in session:
         return redirect(url_for('login'))
     return render_template('home.html')
 
-# ---------------- UPLOAD ----------------
 @app.route('/upload')
 def upload():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    # Pop prediction results from session
     disease = session.pop('disease', None)
     confidence = session.pop('confidence', None)
     severity = session.pop('severity', None)
@@ -148,15 +140,14 @@ def upload():
         prevention=prevention
     )
 
-# ---------------- PREDICT ----------------
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    # Wait until model is ready
     global model_ready
     if not model_ready:
+        print("Prediction requested but model not ready yet")
         return "Model is still loading. Please try again in a few seconds.", 503
 
     img_file = request.files.get('image')
@@ -167,19 +158,16 @@ def predict():
     img_path = os.path.join(UPLOAD_FOLDER, filename)
     img_file.save(img_path)
 
-    # Image preprocessing
     img = image.load_img(img_path, target_size=(128, 128))
     img_array = image.img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict
     prediction = model.predict(img_array)
     confidence = float(np.max(prediction)) * 100
     class_index = np.argmax(prediction)
 
     disease = ["Early_blight", "Healthy", "Late_blight"][class_index] if class_index in [0,1,2] else "Unknown"
 
-    # AI advice
     if disease == "Healthy":
         severity = "No Risk"
         ai_message = "The plant appears healthy. No immediate action required."
@@ -210,7 +198,6 @@ def predict():
 
     tips = tips_data.get(disease, {"treatment": "No data available.", "prevention": "No data available."})
 
-    # Save prediction to DB
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
@@ -221,7 +208,6 @@ def predict():
     cursor.close()
     db.close()
 
-    # Save results in session
     session['disease'] = disease
     session['confidence'] = round(confidence, 2)
     session['severity'] = severity
