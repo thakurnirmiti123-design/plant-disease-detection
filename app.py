@@ -13,14 +13,24 @@ import threading
 load_dotenv()
 
 # ---------------- MODEL SETUP ----------------
+
 MODEL_PATH = "model_compressed.h5"
 
 class FixedDropout(Dropout):
     def _get_noise_shape(self, inputs):
         return self.noise_shape
 
-model = load_model(MODEL_PATH, compile=False, custom_objects={"FixedDropout": FixedDropout})
-print("Model loaded successfully!")
+model = None
+model_ready = False
+
+def load_model_async():
+    global model, model_ready
+    model = load_model(MODEL_PATH, compile=False, custom_objects={"FixedDropout": FixedDropout})
+    model_ready = True
+    print("Model loaded successfully!")
+
+# Start loading in background
+threading.Thread(target=load_model_async).start()
 
 # ---------------- FLASK APP ----------------
 app = Flask(__name__)
@@ -134,7 +144,11 @@ def upload():
 def predict():
     if 'username' not in session:
         return redirect(url_for('login'))
-
+    
+    global model_ready
+    if not model_ready:
+        return "Model is still loading. Please wait 20–30 seconds and try again.", 503
+    
     img_file = request.files.get('image')
     if not img_file or img_file.filename == '':
         return "No image selected", 400
