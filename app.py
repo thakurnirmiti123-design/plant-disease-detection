@@ -5,12 +5,12 @@ from tensorflow.keras.models import load_model  # type: ignore
 from tensorflow.keras.preprocessing import image  # type: ignore
 from tensorflow.keras.layers import Dropout  # type: ignore
 from werkzeug.utils import secure_filename
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
 import gdown
 import threading
 
-load_dotenv()
+#load_dotenv()
 
 # ---------------- MODEL SETUP ----------------
 
@@ -231,7 +231,7 @@ def admin():
     cursor.execute("SELECT COUNT(*) as total FROM predictions")
     total_predictions = cursor.fetchone()['total']
 
-    cursor.execute("SELECT id,username,disease,confidence FROM predictions ORDER BY id DESC")
+    cursor.execute("SELECT id,username,disease,confidence FROM predictions ORDER BY id ASC")
     predictions = cursor.fetchall()
 
     cursor.execute("SELECT disease, COUNT(*) as count FROM predictions GROUP BY disease")
