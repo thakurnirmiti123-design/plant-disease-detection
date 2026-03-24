@@ -79,9 +79,7 @@ def register():
         db.commit()
         cursor.close()
         db.close()
-
         return redirect(url_for('login'))
-
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -90,10 +88,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
+        # Admin login
         if username == "admin" and password == "admin123":
             session['username'] = "admin"
             return redirect(url_for('admin'))
 
+        # Normal user login
         db = get_db()
         cursor = db.cursor(dictionary=True)
         cursor.execute(
@@ -109,8 +109,12 @@ def login():
             return redirect(url_for('home'))
         else:
             return "Invalid Credentials"
-
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 @app.route('/home')
 def home():
@@ -147,7 +151,6 @@ def predict():
 
     global model_ready
     if not model_ready:
-        print("Prediction requested but model not ready yet")
         return "Model is still loading. Please try again in a few seconds.", 503
 
     img_file = request.files.get('image')
@@ -216,6 +219,140 @@ def predict():
     session['prevention'] = tips['prevention']
 
     return redirect(url_for('upload'))
+
+# ---------------- ADMIN PAGE ----------------
+@app.route('/admin')
+def admin():
+    if 'username' not in session or session['username'] != 'admin':
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT COUNT(*) as total FROM users")
+    total_users = cursor.fetchone()['total']
+
+    cursor.execute("SELECT COUNT(*) as total FROM predictions")
+    total_predictions = cursor.fetchone()['total']
+
+    cursor.execute("SELECT id,username,disease,confidence FROM predictions ORDER BY id DESC")
+    predictions = cursor.fetchall()
+
+    cursor.execute("SELECT disease, COUNT(*) as count FROM predictions GROUP BY disease")
+    result = cursor.fetchall()
+
+    labels = [row['disease'] for row in result]
+    values = [row['count'] for row in result]
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        "admin.html",
+        total_users=total_users,
+        total_predictions=total_predictions,
+        predictions=predictions,
+        labels=labels,
+        values=values
+    )
+
+@app.route('/delete_user/<username>')
+def delete_user(username):
+    if 'username' not in session or session['username'] != 'admin':
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM users WHERE username=%s",(username,))
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect(url_for('admin'))
+
+@app.route('/delete_prediction/<int:id>')
+def delete_history(id):
+    if 'username' not in session or session['username'] != 'admin':
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM predictions WHERE id=%s",(id,))
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect(url_for('admin'))
+
+# ---------------- HISTORY PAGE ----------------
+@app.route('/history')
+def history():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute(
+        "SELECT id, disease, confidence FROM predictions WHERE username=%s ORDER BY id DESC",
+        (session['username'],)
+    )
+    records = cursor.fetchall()
+
+    cursor.execute(
+        "SELECT COUNT(*) AS total FROM predictions WHERE username=%s",
+        (session['username'],)
+    )
+    total = cursor.fetchone()['total']
+
+    cursor.execute("""
+        SELECT disease, COUNT(*) AS count
+        FROM predictions
+        WHERE username=%s
+        GROUP BY disease
+        ORDER BY count DESC
+        LIMIT 1
+    """, (session['username'],))
+    most_common = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT AVG(confidence) AS avg_conf FROM predictions WHERE username=%s",
+        (session['username'],)
+    )
+    avg_conf = cursor.fetchone()['avg_conf']
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        'history.html',
+        records=records,
+        total=total,
+        most_common=most_common,
+        avg_conf=round(avg_conf, 2) if avg_conf else 0
+    )
+
+@app.route('/delete/<int:id>')
+def delete_prediction(id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "DELETE FROM predictions WHERE id=%s AND username=%s",
+        (id, session['username'])
+    )
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect(url_for('history'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
