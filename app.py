@@ -14,6 +14,11 @@ load_dotenv()
 
 # ---------------- MODEL SETUP ----------------
 MODEL_PATH = "model_compressed.h5"
+
+class FixedDropout(Dropout):
+    def _get_noise_shape(self, inputs):
+        return self.noise_shape
+
 model = load_model(MODEL_PATH, compile=False, custom_objects={"FixedDropout": FixedDropout})
 print("Model loaded successfully!")
 
