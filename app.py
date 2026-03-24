@@ -349,10 +349,6 @@ def delete_prediction(id):
 
     return redirect(url_for('history'))
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
 
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
