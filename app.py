@@ -13,7 +13,7 @@ import threading
 load_dotenv()
 
 # ---------------- MODEL SETUP ----------------
-MODEL_PATH = "model.h5"
+MODEL_PATH = "model_compressed.h5"
 if not os.path.exists(MODEL_PATH):
     url = "https://drive.google.com/uc?id=1XqTUmVwFoqfL2QUBhpysIwmHb1kGFGnb"
     gdown.download(url, MODEL_PATH, quiet=False)
