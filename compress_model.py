@@ -1,17 +1,15 @@
-import tensorflow as tf
 from tensorflow.keras.models import load_model
+import tensorflow as tf
 
-# Load your original model
-model = load_model("model.h5", compile=False)
-print("Original model loaded.")
+# Load original model
+model = load_model("model.h5")
+print("Original model loaded")
 
-# Convert weights to float16
+# Convert to float16 safely
 for layer in model.layers:
-    if hasattr(layer, 'kernel'):
-        layer.kernel = tf.cast(layer.kernel, tf.float16)
-    if hasattr(layer, 'bias'):
-        layer.bias = tf.cast(layer.bias, tf.float16)
+    if hasattr(layer, 'dtype'):
+        layer._dtype_policy = tf.keras.mixed_precision.Policy('float16')
 
 # Save compressed model
 model.save("model_compressed.h5")
-print("Compressed model saved as 'model_compressed.h5'")
+print("Compressed model saved as model_compressed.h5")

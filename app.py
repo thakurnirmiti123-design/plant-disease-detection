@@ -14,27 +14,8 @@ load_dotenv()
 
 # ---------------- MODEL SETUP ----------------
 MODEL_PATH = "model_compressed.h5"
-#if not os.path.exists(MODEL_PATH):
-   # url = "https://drive.google.com/uc?id=1XqTUmVwFoqfL2QUBhpysIwmHb1kGFGnb"
-   # gdown.download(url, MODEL_PATH, quiet=False)
-
-# FixedDropout class
-class FixedDropout(Dropout):
-    def _get_noise_shape(self, inputs):
-        return self.noise_shape
-
-# Placeholder for model
-model = None
-model_ready = False
-
-# Load model in background thread
-def load_model_async():
-    global model, model_ready
-    model = load_model(MODEL_PATH, compile=False, custom_objects={"FixedDropout": FixedDropout})
-    model_ready = True
-    print("Model loaded successfully!")
-
-threading.Thread(target=load_model_async).start()
+model = load_model(MODEL_PATH, compile=False, custom_objects={"FixedDropout": FixedDropout})
+print("Model loaded successfully!")
 
 # ---------------- FLASK APP ----------------
 app = Flask(__name__)
@@ -148,10 +129,6 @@ def upload():
 def predict():
     if 'username' not in session:
         return redirect(url_for('login'))
-
-    global model_ready
-    if not model_ready:
-        return "Model is still loading. Please try again in a few seconds.", 503
 
     img_file = request.files.get('image')
     if not img_file or img_file.filename == '':
