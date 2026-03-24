@@ -1,108 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Analysis History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 {% include 'navbar.html' %}
 
 <style>
-
     body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background-color: #e2efe2;
-            background-image: radial-gradient(#d0e4d0 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: #2f3e2f;
-        }
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #e2efe2;
+        background-image: radial-gradient(#d0e4d0 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: #2f3e2f;
+    }
 
-        /* Header */
-        .header {
-            background-color: #1b5e20;
-            padding: 20px 40px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* Header */
+    .header {
+        background-color: #1b5e20;
+        padding: 20px 40px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        .header-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
+    .header-title {
+        font-size: 18px;
+        font-weight: 600;
+    }
 
-        .logout-link {
-            color: #c8e6c9;
-            text-decoration: none;
-            font-size: 14px;
-        }
+    .logout-link {
+        color: #c8e6c9;
+        text-decoration: none;
+        font-size: 14px;
+    }
 
-        .logout-link:hover {
-            color: white;
-        }
+    .logout-link:hover {
+        color: white;
+    }
 
-        .main-container{
-        max-width:950px;
-        margin:70px auto;
-        }
+    .main-container {
+        max-width: 950px;
+        margin: 70px auto;
+        padding: 0 15px; /* added padding for small screens */
+    }
 
-        .card-box{
-        background:white;
-        border-radius:18px;
-        padding:40px;
-        box-shadow:0 15px 40px rgba(0,0,0,0.06);
-        }
+    .card-box {
+        background: white;
+        border-radius: 18px;
+        padding: 40px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+    }
 
-        .title{
-        font-size:26px;
-        font-weight:600;
-        color:#1b5e20;
-        margin-bottom:25px;
-        }
+    .title {
+        font-size: 26px;
+        font-weight: 600;
+        color: #1b5e20;
+        margin-bottom: 25px;
+    }
 
-        .stats{
-        display:flex;
-        gap:20px;
-        margin-bottom:30px;
-        }
+    /* Stats cards */
+    .stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap; /* added to wrap on smaller screens */
+    }
 
-        .stat-card{
-        flex:1;
-        background:#f1f8f1;
-        padding:20px;
-        border-radius:12px;
-        text-align:center;
-        border:1px solid #c8e6c9;
-        }
+    .stat-card {
+        flex: 1 1 150px; /* min width and flexible */
+        background: #f1f8f1;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #c8e6c9;
+    }
 
-        .stat-number{
-        font-size:26px;
-        font-weight:600;
-        color:#1b5e20;
-        }
+    .stat-number {
+        font-size: 26px;
+        font-weight: 600;
+        color: #1b5e20;
+    }
 
-        .table-wrapper{
-        max-height:300px;
-        overflow-y:auto;
-        }
+    /* Table wrapper */
+    .table-wrapper {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: auto; /* added horizontal scroll for mobile */
+    }
 
-        .table thead{
-        background:#1b5e20;
-        color:white;
-        }
+    .table {
+        min-width: 600px; /* ensures scroll if table too wide */
+    }
 
-        .delete-btn{
-        background:#c62828;
-        border:none;
-        color:white;
-        padding:5px 10px;
-        border-radius:6px;
-        }
+    .table thead {
+        background: #1b5e20;
+        color: white;
+    }
 
-        .delete-btn:hover{
-        background:#8e0000;
-        }
+    .delete-btn {
+        background: #c62828;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 6px;
+    }
+
+    .delete-btn:hover {
+        background: #8e0000;
+    }
 
 </style>
 
@@ -112,76 +122,72 @@
 
 <div class="main-container">
 
-<div class="card-box">
+    <div class="card-box">
 
-<div class="title">
-Your Analysis History
-</div>
+        <div class="title">
+            Your Analysis History
+        </div>
 
-<div class="stats">
+        <div class="stats">
 
-<div class="stat-card">
-<div class="stat-number">{{ total }}</div>
-<div>Total Analyses</div>
-</div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total }}</div>
+                <div>Total Analyses</div>
+            </div>
 
-<div class="stat-card">
-<div class="stat-number">
-{% if most_common %}
-{{ most_common.disease }}
-{% else %}
-None
-{% endif %}
-</div>
-<div>Most Detected</div>
-</div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    {% if most_common %}
+                        {{ most_common.disease }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </div>
+                <div>Most Detected</div>
+            </div>
 
-<div class="stat-card">
-<div class="stat-number">{{ avg_conf }}%</div>
-<div>Average Confidence</div>
-</div>
+            <div class="stat-card">
+                <div class="stat-number">{{ avg_conf }}%</div>
+                <div>Average Confidence</div>
+            </div>
 
-</div>
+        </div>
 
-<div class="table-wrapper">
+        <div class="table-wrapper">
 
-<table class="table">
+            <table class="table">
 
-<thead>
-<tr>
-<th>ID</th>
-<th>Disease</th>
-<th>Confidence</th>
-<th>Action</th>
-</tr>
-</thead>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Disease</th>
+                        <th>Confidence</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-<tbody>
+                <tbody>
 
-{% for r in records %}
+                    {% for r in records %}
+                    <tr>
+                        <td>{{ r.id }}</td>
+                        <td>{{ r.disease }}</td>
+                        <td>{{ r.confidence }}%</td>
+                        <td>
+                            <a href="/delete/{{r.id}}">
+                                <button class="delete-btn">Delete</button>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
 
-<tr>
-<td>{{ r.id }}</td>
-<td>{{ r.disease }}</td>
-<td>{{ r.confidence }}%</td>
+                </tbody>
 
-<td>
-<a href="/delete/{{r.id}}">
-<button class="delete-btn">Delete</button>
-</a>
-</td>
+            </table>
 
-</tr>
+        </div>
 
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
+    </div>
 
 </div>
 

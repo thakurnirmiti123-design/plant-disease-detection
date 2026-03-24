@@ -1,121 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Plant Leaf Disease Detection System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    {% include 'navbar.html' %}
-    <style>
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background-color: #e2efe2;
-            background-image: radial-gradient(#d0e4d0 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: #2f3e2f;
-        }
+<title>Plant Leaf Disease Detection System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+{% include 'navbar.html' %}
+<style>
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #e2efe2;
+        background-image: radial-gradient(#d0e4d0 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: #2f3e2f;
+    }
 
-        /* Header */
-        .header {
-            background-color: #1b5e20;
-            padding: 20px 40px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* Main Section */
+    .main-container {
+        max-width: 950px;
+        margin: 30px auto;
+        padding: 0 15px;
+    }
 
-        .header-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
+    .card-box {
+        background: white;
+        border-radius: 18px;
+        padding: 40px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+    }
 
-        .logout-link {
-            color: #c8e6c9;
-            text-decoration: none;
-            font-size: 14px;
-        }
+    .section-title {
+        font-size: 26px;
+        font-weight: 600;
+        color: #1b5e20;
+    }
 
-        .logout-link:hover {
-            color: white;
-        }
+    .section-subtitle {
+        color: #5a6d5a;
+        margin-bottom: 25px;
+    }
 
-        /* Main Section */
-        .main-container {
-            max-width: 950px;
-            margin: 70px auto;
-        }
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+    }
 
+    .btn-analyze {
+        background-color: #2e7d32;
+        border: none;
+        padding: 12px;
+        font-weight: 500;
+        border-radius: 8px;
+    }
+
+    .btn-analyze:hover {
+        background-color: #1b5e20;
+    }
+
+    .preview-img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin-top: 20px;
+        border: 2px solid #e0f2e0;
+        height: auto;
+    }
+
+    .result-box {
+        margin-top: 25px;
+        padding: 20px;
+        border-radius: 14px;
+        background-color: #f1f8f1;
+        border: 1px solid #c8e6c9;
+    }
+
+    .result-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        margin: auto;
+        width: 100%;
+    }
+
+    .progress {
+        height: 8px;
+    }
+
+    .progress-bar {
+        background-color: #2e7d32;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
         .card-box {
-            background: white;
-            border-radius: 18px;
-            padding: 50px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+            padding: 25px;
         }
 
         .section-title {
-            font-size: 26px;
-            font-weight: 600;
-            color: #1b5e20;
+            font-size: 22px;
         }
 
         .section-subtitle {
-            color: #5a6d5a;
-            margin-bottom: 35px;
-        }
-
-        .form-control {
-            border-radius: 8px;
-            padding: 10px;
+            font-size: 14px;
         }
 
         .btn-analyze {
-            background-color: #2e7d32;
-            border: none;
-            padding: 12px;
-            font-weight: 500;
-            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
         }
-
-        .btn-analyze:hover {
-            background-color: #1b5e20;
-        }
-
-        .preview-img {
-            max-width: 320px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 2px solid #e0f2e0;
-        }
-
-        .result-box {
-            margin-top: 35px;
-            padding: 25px;
-            border-radius: 14px;
-            background-color: #f1f8f1;
-            border: 1px solid #c8e6c9;
-        }
-
-        .progress {
-            height: 8px;
-        }
-
-        .progress-bar {
-            background-color: #2e7d32;
-        }
-
-        .result-card {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            max-width: 700px;
-            margin: auto;
-        }
-
-    </style>
+    }
+</style>
 </head>
 <body>
-
-
 
 <div class="main-container">
     <div class="card-box">
@@ -142,56 +136,56 @@
         </form>
 
         {% if disease %}
-<div class="result-card mt-5">
+        <div class="result-card mt-4">
 
-    <h4 class="text-center">Plant Disease Detection</h4>
+            <h4 class="text-center">Plant Disease Detection</h4>
 
-    <h2 class="text-center 
-        {% if disease == 'Healthy' %}
-            text-success
-        {% else %}
-            text-danger
+            <h2 class="text-center 
+                {% if disease == 'Healthy' %}
+                    text-success
+                {% else %}
+                    text-danger
+                {% endif %}
+            ">
+                {{ disease }}
+            </h2>
+
+            <p class="text-center">
+                Confidence: <strong>{{ confidence }}%</strong>
+            </p>
+
+            <p class="text-center">
+                Severity Level: <strong>{{ severity }}</strong>
+            </p>
+
+            <div class="alert 
+                {% if severity == 'High Risk' %}
+                    alert-danger
+                {% elif severity == 'Moderate Risk' %}
+                    alert-warning
+                {% else %}
+                    alert-info
+                {% endif %}
+            ">
+                {{ ai_message }}
+            </div>
+
+            {% if disease != "Healthy" %}
+            <hr>
+            <h5>Recommended Treatment</h5>
+            <p>{{ treatment }}</p>
+
+            <h5 class="mt-3">Prevention Tips</h5>
+            <p>{{ prevention }}</p>
+            {% else %}
+            <hr>
+            <div class="alert alert-success">
+                Your plant appears healthy. Continue regular care and monitoring.
+            </div>
+            {% endif %}
+
+        </div>
         {% endif %}
-    ">
-        {{ disease }}
-    </h2>
-
-    <p class="text-center">
-        Confidence: <strong>{{ confidence }}%</strong>
-    </p>
-
-    <p class="text-center">
-        Severity Level: <strong>{{ severity }}</strong>
-    </p>
-
-    <div class="alert 
-        {% if severity == 'High Risk' %}
-            alert-danger
-        {% elif severity == 'Moderate Risk' %}
-            alert-warning
-        {% else %}
-            alert-info
-        {% endif %}
-    ">
-        {{ ai_message }}
-    </div>
-
-    {% if disease != "Healthy" %}
-    <hr>
-    <h5>Recommended Treatment</h5>
-    <p>{{ treatment }}</p>
-
-    <h5 class="mt-3">Prevention Tips</h5>
-    <p>{{ prevention }}</p>
-    {% else %}
-    <hr>
-    <div class="alert alert-success">
-        Your plant appears healthy. Continue regular care and monitoring.
-    </div>
-    {% endif %}
-
-</div>
-{% endif %}
 
     </div>
 </div>
